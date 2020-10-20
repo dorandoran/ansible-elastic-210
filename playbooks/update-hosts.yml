@@ -1,0 +1,13 @@
+---
+- name: Updating all hosts
+  hosts: cluster
+  gather_facts: no
+  pre_tasks:
+    - name: Establish SSH connection
+      import_role:
+        name: establish-connection
+  
+  tasks:
+    - name: Update hosts
+      import_role:
+        name: update-host

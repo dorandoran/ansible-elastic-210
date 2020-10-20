@@ -1,0 +1,41 @@
+---
+- name: SSH Key File Test
+  delegate_to: localhost
+  block:
+    - name: Checking SSH port
+      delegate_to: localhost
+      wait_for:
+        port: 22
+        host: '{{ ansible_host }}'
+        search_regex: 'SSH'
+        timeout: 5
+        msg: >
+          Failed to connect to {{ inventory_hostname }} over SSH.
+
+- name: Check validity of inventory credentials
+  ping:
+  ignore_errors: yes
+  ignore_unreachable: yes
+  no_log: yes
+  register: cred_response
+
+# Connection tests and bypass EDSCA fingerprint
+- name: Try default credentials
+  when: cred_response is failed or cred_response is unreachable
+  ignore_errors: yes
+  ignore_unreachable: yes
+  no_log: yes
+  block:
+    - name: Test for default ssh user and password
+      vars:
+        ansible_ssh_user: '{{ ansible_user }}'
+        ansible_ssh_extra_args: '-o StrictHostKeyChecking=no'
+      ping:
+      register: user_pass_response
+    
+    - name: Fail when cannot login
+      when: user_pass_response is failed or user_pass_response is unreachable
+      fail:
+        msg: >
+          Unable to log into {{ inventory_hostname }}. Please provide
+          valid credentials by modifying the ansible inventory.

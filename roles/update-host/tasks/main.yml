@@ -1,0 +1,16 @@
+--- # Ubuntu
+- name: Update packages
+  become: yes
+  apt:
+    name: '*'
+    state: latest
+  
+- name: Check if reboot is required
+  stat:
+    path: /var/run/reboot-required
+  register: restart_response
+
+- name: Restart if required
+  become: yes
+  when: restart_response.stat.exists
+  reboot:
