@@ -1,6 +1,6 @@
 ---
 - name: Updating all hosts
-  hosts: cluster
+  hosts: elastic2
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection

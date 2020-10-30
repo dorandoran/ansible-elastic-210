@@ -1,4 +1,2 @@
 ---
-ansible_user: pdcode
-ansible_password: raspberrY321!
 ansible_become_pass: '{{ ansible_password }}'
