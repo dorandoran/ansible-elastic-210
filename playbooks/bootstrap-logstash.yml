@@ -1,0 +1,15 @@
+---
+- name: Bootstrap Logstash
+  hosts: logstash
+  gather_facts: no
+  pre_tasks:
+    - name: Establish SSH conneciton
+      import_role:
+        name: establish-connection
+  tasks:
+    - name: Update host
+      import_role:
+        name: update-host
+    - name: Bootstrap Logstash
+      import_role:
+        name: logstash

@@ -1,0 +1,32 @@
+---
+- name: Check if certificate bundle exists
+  stat:
+    path: '/usr/share/elasticsearch/{{ cert_key_name }}.zip'
+  register: bundle
+
+- name: Create a certificate and private key
+  become: yes
+  when: not bundle.stat.exists
+  command: >-
+    bin/elasticsearch-certutil cert \
+    --name {{ cert_key_name }} --out {{ cert_key_name }}.zip \
+    --pem
+  args:
+    chdir: /usr/share/elasticsearch/
+
+- name: Change permissions to transfer
+  become: yes
+  command: 'chmod 666 /usr/share/elasticsearch/{{ cert_key_name }}.zip'
+
+- name: Fetching certificate bundle
+  become: yes
+  fetch:
+    src: '/usr/share/elasticsearch/{{ cert_key_name }}.zip'
+    dest: '{{ role_path }}/../../'
+    flat: yes
+
+- name: Remove cert
+  become: yes
+  file:
+    path: '/usr/share/elasticsearch/{{ cert_key_name }}.zip'
+    state: absent

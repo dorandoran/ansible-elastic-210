@@ -1,0 +1,47 @@
+---
+- name: Create certificate bundle
+  hosts: elastic1
+  gather_facts: no
+  pre_tasks:
+    - name: Establish SSH connection
+      import_role:
+        name: establish-connection
+  tasks:
+    - name: Create certificate bundle
+      import_role:
+        name: elasticsearch
+        tasks_from: create-cert.yml
+
+- name: Configure security in Elasticsearch
+  hosts: elasticsearch
+  gather_facts: no
+  pre_tasks:
+    - name: Establish SSH connection
+      import_role:
+        name: establish-connection
+  tasks:
+    - name: Update hosts
+      import_role:
+        name: update-host
+    - name: Configure security
+      import_role:
+        name: elasticsearch
+        tasks_from: security.yml
+
+- name: Configure security in Kibana
+  hosts: kibana
+  gather_facts: no
+  pre_tasks:
+    - name: Establish SSH connection
+      import_role:
+        name: establish-connection
+  tasks:
+    - name: Update hosts
+      import_role:
+        name: update-host
+    - name: Configure security
+      vars:
+        target_type: kibana
+      import_role:
+        name: elasticsearch
+        tasks_from: security.yml

@@ -3,6 +3,7 @@ elastic_cluster_name: cascade-delight
 
 # Elasticsearch port
 elastic_http_port: 9200
+elastic_http_port_string: ':9200'
 
 # Port nodes use to communicate
 elastic_transport_port: 9300
@@ -20,3 +21,62 @@ coord_heap:
 data_heap:
   min: '-Xms4g'
   max: '-Xmx4g'
+
+# Security variables
+target_type: elasticsearch
+
+create_ca: no
+cert_key_name: cascade.delight.ssl
+
+elasticsearch_config_list:
+  - key: xpack.security.enabled
+    value: true
+  - key: xpack.security.transport.ssl.enabled
+    value: true
+  - key: xpack.security.transport.ssl.verification_mode
+    value: none
+  - key: xpack.security.transport.ssl.key
+    value: '/etc/elasticsearch/pki/{{ cert_key_name }}.key'
+  - key: xpack.security.transport.ssl.certificate
+    value: '/etc/elasticsearch/pki/{{ cert_key_name }}.crt'
+  - key: xpack.security.transport.ssl.certificate_authorities
+    value: ['/etc/elasticsearch/pki/ca.crt']
+  - key: xpack.security.http.ssl.enabled
+    value: true
+  - key: xpack.security.http.ssl.key
+    value: '/etc/elasticsearch/pki/{{ cert_key_name }}.key'
+  - key: xpack.security.http.ssl.certificate
+    value: '/etc/elasticsearch/pki/{{ cert_key_name }}.crt'
+  - key: xpack.security.http.ssl.certificate_authorities
+    value: ['/etc/elasticsearch/pki/ca.crt']
+  - key: xpack.security.http.ssl.verification_mode
+    value: none
+  - key: xpack.security.audit.enabled
+    value: true
+
+kibana_config_list:
+  - key: server.ssl.enabled
+    value: true
+  - key: server.ssl.certificate
+    value: '/etc/kibana/pki/{{ cert_key_name }}.crt'
+  - key: server.ssl.key
+    value: '/etc/kibana/pki/{{ cert_key_name }}.key'
+  - key: elasticsearch.ssl.certificateAuthorities
+    value: ['/etc/kibana/pki/ca.crt']
+  - key: elasticsearch.ssl.certificate
+    value: '/etc/kibana/pki/{{ cert_key_name }}.crt'
+  - key: elasticsearch.key.certificate
+    value: '/etc/kibana/pki/{{ cert_key_name }}.key'
+  - key: elasticsearch.ssl.verificationMode
+    value: 'none'
+  - key: xpack.security.enabled
+    value: true
+  - key: xpack.encryptedSavedObjects.encryptionKey
+    value: 'oizxOIlknasdZXIh0922!jsd098fDSF0932!0dsajflka!201asdfLKOas'
+  - key: elasticsearch.hosts
+    value: >-
+      {{ groups["elasticsearch"]
+      | map("extract", hostvars, ["ansible_host"])
+      | list
+      | format_list(elastic_http_port_string)
+      | format_list("https://", True) }}

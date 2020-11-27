@@ -1,6 +1,6 @@
 ---
 - name: Bootstrap Elasticsearch
-  hosts: elasticsearch
+  hosts: vm_elasticsearch
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection
@@ -8,18 +8,17 @@
         name: establish-connection
   tasks:
     - name: Install Elasticsearch
-      become: yes
       import_role:
         name: elasticsearch
         tasks_from: setup.yml
-    
+
 - name: Configure Elasticsearch on Coordinating Nodes
-  hosts: coord-node
+  hosts: vm_coordnode
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection
       import_role:
-        name: establish-connection 
+        name: establish-connection
   tasks:
     - name: Configure Coordinating Nodes
       import_role:
@@ -29,7 +28,7 @@
         target_coord: true
 
 - name: Configure Elasticsearch on Data Nodes
-  hosts: data-node
+  hosts: vm_datanode
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection

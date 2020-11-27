@@ -1,0 +1,7 @@
+---
+- name: Disabling shard allocation
+  command: >
+    curl -X PUT -k "https://192.168.1.201:9200/_cluster/settings?pretty" -H "Content-Type: application\/json" -d '{"persistent":{"cluster.routing.allocation.enable":"primaries"}}'
+
+- name: Stop non-essential indexing at flush
+  command: curl -X POST -k "https://192.168.1.201:9200/_flush/synced?pretty"

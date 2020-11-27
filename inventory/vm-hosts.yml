@@ -1,0 +1,48 @@
+---
+vm_cluster:
+  hosts:
+    kelly1:
+      ansible_host: 192.168.1.111
+    emma1:
+      ansible_host: 192.168.1.101
+    emma2:
+      ansible_host: 192.168.1.102
+    emma3:
+      ansible_host: 192.168.1.103
+    emma4:
+      ansible_host: 192.168.1.104
+    emma5:
+      ansible_host: 192.168.1.105
+    louie1:
+      ansible_host: 192.168.1.115
+
+vm_filebeat:
+  hosts:
+    louie1:
+
+vm_logstash:
+  hosts:
+    louie1:
+
+vm_kibana:
+  hosts:
+    kelly1:
+
+vm_elasticsearch:
+  hosts:
+    emma1:
+    emma2:
+    emma3:
+    emma4:
+    emma5:
+
+vm_datanode:
+  hosts:
+    emma1:
+    emma2:
+    emma3:
+    emma4:
+    emma5:
+
+vm_coordnode:
+  hosts:

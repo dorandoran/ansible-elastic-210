@@ -1,0 +1,26 @@
+---
+# - name: Preparing Elasticsearch for Upgrade
+#   hosts: elastic1
+#   gather_facts: no
+#   pre_tasks:
+#     - name: Establish SSH connection
+#       import_role:
+#         name: establish-connection
+#   tasks:
+#     - name: Applying upgrade configurations
+#       import_role:
+#         name: elasticsearch
+#         tasks_from: upgrade-configuration.yml
+
+- name: Upgrade Elasticsearch
+  hosts: elasticsearch
+  serial: 1
+  pre_tasks:
+    - name: Establish SSH connection
+      import_role:
+        name: establish-connection
+  tasks:
+    - name: Applying upgrade configurations
+      import_role:
+        name: elasticsearch
+        tasks_from: upgrade.yml

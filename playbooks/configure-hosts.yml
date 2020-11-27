@@ -1,30 +1,30 @@
 ---
 - name: Updating all hosts
-  hosts: elastic2
+  hosts: elastic3
   gather_facts: no
   vars:
-    ansible_user:
-    ansible_password:
-    ansible_become_pass: '{{ ansible_password }}'
+    ansible_user: ubuntu
+    ansible_password: mintberrY123#
+    ansible_become_pass: "{{ ansible_password }}"
   pre_tasks:
     - name: Establish SSH connection
       import_role:
         name: establish-connection
-  
+
   tasks:
     - name: Set hostname
       become: yes
       hostname:
-        name: '{{ inventory_hostname }}'
+        name: "{{ inventory_hostname }}"
 
     - name: Add user
       become: yes
       user:
-        name: 
-        password: '{{ "" | password_hash("sha512", "mysecretsalt") }}'
+        name: pdcode
+        password: '{{ "raspberrY321!" | password_hash("sha512", "mysecretsalt") }}'
         state: present
         group: sudo
-    
+
     - name: Reboot
       become: yes
       reboot:

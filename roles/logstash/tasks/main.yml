@@ -1,0 +1,12 @@
+---
+- name: Setup repository assets
+  import_tasks: setup-repository.yml
+
+- name: Install Logstash
+  become: yes
+  package:
+    name:
+      - default-jre
+      - apt-transport-https
+      - logstash
+    state: present

@@ -1,0 +1,63 @@
+---
+- name: Install unzip
+  become: yes
+  package:
+    name: unzip
+    state: present
+
+- name: Create a temporary folder
+  tempfile:
+    state: directory
+  register: temp_dir
+  notify: Remove temporary directory
+
+- name: Copy over certificate bundle
+  become: yes
+  copy:
+    src: '{{ role_path }}/../../{{ cert_key_name }}.zip'
+    dest: '{{ temp_dir.path }}'
+
+- name: Unziping certificate bundle
+  become: yes
+  unarchive:
+    src: '/{{ temp_dir.path }}/{{ cert_key_name }}.zip'
+    dest: '{{ temp_dir.path }}'
+    remote_src: yes
+
+- name: Creating a directory for TSL/SSL files
+  become: yes
+  file:
+    path: '/etc/{{ target_type }}/pki'
+    state: directory
+    owner: '{{ target_type }}'
+    group: root
+
+- name: Move TSL/SSL files
+  become: yes
+  command: 'mv {{ temp_dir.path }}/{{ item }} /etc/{{ target_type }}/pki/'
+  loop:
+    - ca/ca.crt
+    - '{{ cert_key_name }}/{{ cert_key_name }}.crt'
+    - '{{ cert_key_name }}/{{ cert_key_name }}.key'
+
+- name: Get config list
+  set_fact:
+    xpack_config_list: '{{ kibana_config_list if target_type == "kibana" else elasticsearch_config_list }}'
+
+- name: Adding security settings to config
+  become: yes
+  lineinfile:
+    path: '/etc/{{ target_type }}/{{ target_type }}.yml'
+    regexp: '^{{ item.key }}:'
+    line: '{{ item.key }}: {{ item.value }}'
+    create: yes
+  loop: '{{ xpack_config_list }}'
+
+- name: Ensure correct ownership
+  become: yes
+  command: 'chown -R root:{{ target_type }} /etc/{{ target_type }}/pki'
+# - name: Restart service
+#   become: yes
+#   service:
+#     name: '{{ target_type }}'
+#     state: restarted

@@ -14,15 +14,15 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: {{ elastic_cluster_name }}
+cluster.name: cascade-delight
 
 #
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
 #
-node.name: {{ inventory_hostname }}
-node.roles: [ data, master, ingest ]
+node.name: elastic1
+node.roles: [data, master, ingest]
 #
 # Add custom attributes to the node:
 #
@@ -54,12 +54,12 @@ path.logs: /var/log/elasticsearch
 #
 # Set the bind address to a specific IP (IPv4 or IPv6):
 #
-network.host: {{ ansible_host }}
+network.host: 192.168.1.201
 #
 # Set a custom port for HTTP:
 #
-http.port: {{ elastic_http_port }}
-transport.port: {{ elastic_transport_port }}
+http.port: 9200
+transport.port: 9300
 #
 # For more information, consult the network module documentation.
 #
@@ -68,11 +68,19 @@ transport.port: {{ elastic_transport_port }}
 # Pass an initial list of hosts to perform discovery when this node is started:
 # The default list of hosts is ["127.0.0.1", "[::1]"]
 #
-discovery.seed_hosts: {{ groups['vm_elasticsearch'] | map('extract', hostvars, ['ansible_host']) | list }}
+discovery.seed_hosts:
+  [
+    '192.168.1.201',
+    '192.168.1.202',
+    '192.168.1.203',
+    '192.168.1.204',
+    '192.168.1.205',
+  ]
 #
 # Bootstrap the cluster using an initial set of master-eligible nodes:
 #
-cluster.initial_master_nodes: {{ groups['vm_datanode'] }}
+cluster.initial_master_nodes:
+  ['elastic1', 'elastic2', 'elastic3', 'elastic4', 'elastic5']
 #
 # For more information, consult the discovery and cluster formation module documentation.
 #
@@ -90,3 +98,17 @@ cluster.initial_master_nodes: {{ groups['vm_datanode'] }}
 #
 #action.auto_create_index: .monitoring*,.watches,.triggered_watches,.watcher-history*,.ml*
 #action.destructive_requires_name: true
+xpack.security.enabled: True
+xpack.security.transport.ssl.enabled: True
+xpack.security.transport.ssl.verification_mode: none
+xpack.security.transport.ssl.key: /etc/elasticsearch/pki/cascade.delight.ssl.key
+xpack.security.http.ssl.enabled: True
+xpack.security.http.ssl.key: /etc/elasticsearch/pki/cascade.delight.ssl.key
+xpack.security.transport.ssl.certificate: /etc/elasticsearch/pki/cascade.delight.ssl.crt
+xpack.security.http.ssl.certificate: /etc/elasticsearch/pki/cascade.delight.ssl.crt
+xpack.security.audit.enabled: True
+xpack.security.transport.ssl.certificate_authorities:
+  ['/etc/elasticsearch/pki/ca.crt']
+xpack.security.http.ssl.certificate_authorities:
+  ['/etc/elasticsearch/pki/ca.crt']
+xpack.security.http.ssl.verification_mode: none

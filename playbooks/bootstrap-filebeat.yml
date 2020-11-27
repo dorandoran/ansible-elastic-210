@@ -1,13 +1,16 @@
 ---
-- name: Updating all hosts
-  hosts: cluster
+- name: Bootstrap filbeat
+  hosts: filebeat
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection
       import_role:
         name: establish-connection
-
   tasks:
-    - name: Update hosts
+    - name: Update host
       import_role:
         name: update-host
+    - name: Install Filebeat
+      import_role:
+        name: beats
+        tasks_from: filebeat.yml

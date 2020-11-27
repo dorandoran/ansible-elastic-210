@@ -2,7 +2,6 @@
 - name: Get JVM heap values
   set_fact:
     elastic_heap: '{{ coord_heap if target_coord is defined else data_heap }}'
-    node_flag: '{{ false if target_coord is defined else true }}'
 
 - name: Template elasticsearch.yml file to {{ inventory_hostname }}
   become: yes

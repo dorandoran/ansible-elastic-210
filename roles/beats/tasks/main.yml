@@ -1,0 +1,11 @@
+---
+- name: Setup repository assets
+  import_tasks: setup-repository.yml
+
+- name: Install Filebeat
+  become: yes
+  package:
+    name:
+      - apt-transport-https
+      - filebeat
+    state: present

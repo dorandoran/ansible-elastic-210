@@ -1,0 +1,6 @@
+---
+- name: Remove temporary directory
+  become: yes
+  file:
+    path: '{{ temp_dir.path }}'
+    state: absent

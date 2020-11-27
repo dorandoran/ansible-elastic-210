@@ -1,0 +1,46 @@
+---
+- name: Download and add Elastic GPG public signing key
+  become: yes
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Save the Elasticsearch repository definition
+  become: yes
+  apt_repository:
+    repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+    state: present
+
+- name: Install Kibana
+  become: yes
+  package:
+    name: kibana
+    state: present
+
+- name: Template kibana.yml file to {{ inventory_hostname }}
+  become: yes
+  template:
+    src: kibana.yml.j2
+    dest: /etc/kibana/kibana.yml
+    force: yes
+    owner: root
+    group: kibana
+    mode: 0660 # Make sure to have read access
+
+- name: Stop Kibana service
+  become: yes
+  service:
+    name: kibana
+    state: stopped
+
+- name: Start and enable Kibana service
+  become: yes
+  service:
+    name: kibana
+    enabled: yes
+    state: started
+
+- name: Verify contact to elasticsearch
+  uri:
+    url: 'http://{{ hostvars["emma1"]["ansible_host"] }}:{{ elastic_http_port }}/'
+    method: GET

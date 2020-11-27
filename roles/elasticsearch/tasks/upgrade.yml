@@ -1,0 +1,35 @@
+---
+- name: Become root to run tasks
+  become: yes
+  throttle: 1
+  block:
+    - name: Shutting down elasticsearch
+      service:
+        name: elasticsearch
+        state: stopped
+
+    - name: Upgrade Elasticsearch
+      import_tasks: setup.yml
+
+    # https://www.elastic.co/guide/en/elasticsearch/plugins/current/listing-removing-updating.html
+    # - name: Upgrade related plugins
+    #   command: /usr/share/elasticsearch/bin/elasticsearch-plugin remove [pluginname]
+
+    - name: Start Elasticsearch
+      service:
+        name: elasticsearch
+        state: started
+        enabled: yes
+
+    # - name: Verify contact to elasticsearch
+    #   uri:
+    #     url: 'http://{{ ansible_host }}:{{ elastic_http_port }}/_cat/nodes'
+    #     method: GET
+    #     url_username: elastic
+    #     url_password: elastic123
+    #     validate_certs: no
+    #   register: test
+
+    # - name: Debug
+    #   debug:
+    #     msg: '{{ test }}'

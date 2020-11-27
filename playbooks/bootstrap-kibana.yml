@@ -1,13 +1,12 @@
 ---
-- name: Updating all hosts
-  hosts: cluster
+- name: Bootstrap Kibana
+  hosts: vm_kibana
   gather_facts: no
   pre_tasks:
     - name: Establish SSH connection
       import_role:
         name: establish-connection
-
   tasks:
-    - name: Update hosts
+    - name: Install Kibana
       import_role:
-        name: update-host
+        name: kibana
